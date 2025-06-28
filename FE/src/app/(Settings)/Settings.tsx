@@ -14,7 +14,7 @@ export default function SettingsScreen() {
             <SafeAreaView style={[mainStyles.topSheet, { padding: 0 }]} />
             <View style={mainStyles.bottomeSheet}>
 
-              <TouchableOpacity
+              {/* <TouchableOpacity
                   style={styles.row}
                   onPress={() => router.push("/NotiSetting")}>
                   <View style={styles.iconCircle}>
@@ -26,7 +26,7 @@ export default function SettingsScreen() {
                   </View>
                   <Text style={styles.rowText}>Cài Đặt Thông Báo</Text>
                   <Ionicons name="chevron-forward" size={22} color="#000" />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
               <TouchableOpacity
                   style={styles.row}
                   onPress={() => router.push("/ChangePassword")}>
@@ -53,7 +53,7 @@ export default function SettingsScreen() {
                   <Text style={styles.rowText}>Xoá Tài Khoản</Text>
                   <Ionicons name="chevron-forward" size={22} color="#000" />
               </TouchableOpacity>
-              <TouchableOpacity
+              {/* <TouchableOpacity
                   style={styles.row}
                   onPress={() => router.push("/AISettings")}>
                   <View style={styles.iconCircle}>
@@ -65,7 +65,7 @@ export default function SettingsScreen() {
                   </View>
                   <Text style={styles.rowText}>AI ChatBot</Text>
                   <Ionicons name="chevron-forward" size={22} color="#000" />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
         </SafeAreaView>
     );

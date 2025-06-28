@@ -152,14 +152,14 @@ export default function ProfileScreen() {
                     </View>
                     <Text style={styles.menuText}>Thông Tin Cá Nhân</Text>
                 </TouchableOpacity>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                     style={styles.menuItem}
                     onPress={() => router.push("../Security")}>
                     <View style={styles.menuIcon}>
                         <MaterialIcons name="security" size={24} color="#fff" />
                     </View>
                     <Text style={styles.menuText}>Bảo Mật</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <TouchableOpacity
                     style={styles.menuItem}
                     onPress={() => router.push("../Settings")}>

@@ -34,6 +34,7 @@ import {
 import { getAccountByUserId } from "@/QuanLyTaiChinh-backend/accountServices";
 import { Timestamp } from "firebase/firestore";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 // hoặc nếu dùng v8
 // import { Timestamp } from '@firebase/firestore-types';
 // Categories from Categories.tsx
@@ -207,10 +208,10 @@ export default function AddExpenseScreen() {
             return;
         }
 
-        if (!expenseName || safeString(expenseName).trim() === "") {
-            Alert.alert("Lỗi", "Vui lòng nhập tên giao dịch");
-            return;
-        }
+        // if (!expenseName || safeString(expenseName).trim() === "") {
+        //     Alert.alert("Lỗi", "Vui lòng nhập tên giao dịch");
+        //     return;
+        // }
 
         const amountStr = safeString(expenseAmount).trim();
         if (!amountStr || isNaN(parseFloat(amountStr))) {
@@ -391,6 +392,13 @@ export default function AddExpenseScreen() {
     }
 
     return (
+        <KeyboardAwareScrollView
+                    enableOnAndroid
+                    keyboardShouldPersistTaps="handled"
+                    contentContainerStyle={{ flexGrow: 1 }}
+                    style={{ flex: 1 }}>
+
+                    
         <SafeAreaView style={mainStyles.container}>
             <SafeAreaView style={[mainStyles.topSheet, {padding: 0}]}/>
             <View style={mainStyles.bottomeSheet}>
@@ -412,7 +420,7 @@ export default function AddExpenseScreen() {
                 </View>
 
                 {/* Transaction Name */}
-                <View style={styles.inputSection}>
+                {/* <View style={styles.inputSection}>
                     <Text style={styles.label}>Tên giao dịch</Text>
                     <TextInput
                         style={styles.textInput}
@@ -421,7 +429,7 @@ export default function AddExpenseScreen() {
                         placeholder="Nhập tên giao dịch"
                         placeholderTextColor="#999"
                     />
-                </View>
+                </View> */}
 
                 {/* Amount */}
                 <View style={styles.inputSection}>
@@ -543,6 +551,7 @@ export default function AddExpenseScreen() {
                 </View>
             </Modal>
         </SafeAreaView>
+        </KeyboardAwareScrollView>
     );
 }
 

@@ -17,6 +17,7 @@ import mainStyles from "@/src/styles/mainStyle";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getUserById, updateUser } from "@/QuanLyTaiChinh-backend/userServices";
 import { User } from "@/models/types";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export default function ProfileSettingScreen() {
     const router = useRouter();
@@ -164,6 +165,12 @@ export default function ProfileSettingScreen() {
     }
 
     return (
+        <KeyboardAwareScrollView
+            enableOnAndroid
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{ flexGrow: 1 }}
+            style={{ flex: 1 }}>
+            
         <SafeAreaView style={mainStyles.container}>
             <SafeAreaView style={[mainStyles.topSheet, { alignItems: "center" }]}>
                 <View style={styles.avatarWrapper}>
@@ -200,7 +207,7 @@ export default function ProfileSettingScreen() {
                     editable={!isSaving}
                 />
 
-                <Text style={styles.sectionTitle}>Cài Đặt Ứng Dụng</Text>
+                {/* <Text style={styles.sectionTitle}>Cài Đặt Ứng Dụng</Text>
 
                 <View style={styles.switchRow}>
                     <Text style={styles.switchLabel}>Chế độ tối</Text>
@@ -222,7 +229,7 @@ export default function ProfileSettingScreen() {
                         thumbColor={pushNotifications ? "#fff" : "#fff"}
                         disabled={isSaving}
                     />
-                </View>
+                </View> */}
 
                 <TouchableOpacity 
                     style={[styles.updateBtn, isSaving && styles.disabledBtn]} 
@@ -237,6 +244,7 @@ export default function ProfileSettingScreen() {
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
+        </KeyboardAwareScrollView>
     );
 }
 

@@ -44,19 +44,19 @@ const SavingsGoalCard = () => {
                 <View style={styles.circle}>
                     <Ionicons name="cash-outline" size={24} color="white" />
                 </View>
-                <Text style={styles.goalText}>Mục Tiêu{"\n"}Tiết Kiệm</Text>
+                <Text style={styles.goalText}>Lịch sử{"\n"}thu chi</Text>
             </View>
 
             <View style={styles.divider} />
 
             <View style={styles.rightSection}>
                 <View style={styles.row}>
-                    <Text style={styles.label}>Thu nhập tháng trước</Text>
+                    <Text style={styles.label}>Thu nhập tháng này</Text>
                     <Text style={styles.amount}>{totalIncome}</Text>
                 </View>
                 <View style={styles.separator} />
                 <View style={styles.row}>
-                    <Text style={styles.label}>Chi tiêu tháng trước</Text>
+                    <Text style={styles.label}>Chi tiêu tháng này</Text>
                     <Text style={styles.amount}>{totalExpense}</Text>
                 </View>
             </View>
