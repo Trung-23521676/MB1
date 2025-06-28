@@ -39,26 +39,17 @@ const initialExpenses = [
     // Add more dummy data if needed
 ];
 
-export default function GroceriesScreen() {
+export default function MedScreen() {
     const [fontsLoaded] = useFonts({
         Montserrat_700Bold,
         Montserrat_400Regular,
     });
 
-    const [expenses] = useState(initialExpenses);
-    const router = useRouter();
-
-    // Time picker state
-    const [mode, setMode] = useState<"day" | "month">("month");
-    const [selectedDate, setSelectedDate] = useState(new Date());
-    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
-    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [selectedDate] = useState(new Date());
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [userId, setUserId] = useState<string | null>(null);
-    const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
-    // Fetch userId from AsyncStorage
     useEffect(() => {
         const fetchUserId = async () => {
             try {
@@ -72,92 +63,47 @@ export default function GroceriesScreen() {
         fetchUserId();
     }, []);
 
-    // Fetch transactions when userId is available
     useEffect(() => {
         const fetchTransactions = async () => {
-            if (userId) {
-                try {
-                    setLoading(true);
-                    console.log(
-                        "Starting to fetch transactions for userId:",
-                        userId
-                    );
+            if (!userId) return;
 
-                    const cat = await getCategoryByName("Ăn Uống");
-                    console.log("Category response:", cat);
+            try {
+                setLoading(true);
 
-                    if (!cat || cat.length === 0) {
-                        console.log("No category found with name 'Ăn uống'");
-                        setTransactions([]);
-                        return;
-                    }
-
-                    const category = cat[0];
-                    console.log("Found category:", category);
-
-                    // Kiểm tra các thuộc tính có thể có của category
-                    const categoryId = category.id || category.id;
-                    console.log("Category ID:", categoryId);
-
-                    if (!categoryId) {
-                        console.log(
-                            "Category ID is undefined. Category object:",
-                            category
-                        );
-                        console.log("Available keys:", Object.keys(category));
-                        setTransactions([]);
-                        return;
-                    }
-
-                    console.log("Using category ID:", categoryId);
-                    const trans = await getTransactionsByCategory(categoryId);
-
-                    if (!trans || trans.length === 0) {
-                        console.log(
-                            "No transactions found for category 'Ăn uống'"
-                        );
-                        setTransactions([]);
-                        return;
-                    }
-
-                    setTransactions(trans);
-                    console.log(
-                        "Fetched transactions for category:",
-                        trans.length
-                    );
-                } catch (error) {
-                    console.error("Error fetching transactions:", error);
-                    //console.error('Error details:', e.message);
+                const cat = await getCategoryByName("Y Tế");
+                if (!cat || cat.length === 0) {
                     setTransactions([]);
-                } finally {
-                    setLoading(false);
+                    return;
                 }
-            } else {
-                console.log("No userId available");
+
+                const category = cat[0];
+                const categoryId = category.id;
+
+                if (!categoryId) {
+                    setTransactions([]);
+                    return;
+                }
+
+                const allTrans = await getTransactionsByCategory(categoryId);
+                const userTrans = allTrans.filter(
+                    (t) => t.userId === userId
+                );
+                
+                setTransactions(userTrans);
+                console.log("Fetched:", transactions);
+
+            } catch (error) {
+                console.error("Error fetching transactions:", error);
+                setTransactions([]);
+            } finally {
                 setLoading(false);
             }
         };
 
         fetchTransactions();
     }, [userId]);
+
     if (!fontsLoaded) return null;
-
-    // Filter expenses
-    const filteredExpenses = expenses.filter((exp) => {
-        if (mode === "day") {
-            return (
-                parseInt(exp.date) === selectedDate.getDate() &&
-                parseInt(exp.month) === selectedDate.getMonth() + 1 &&
-                parseInt(exp.year) === selectedDate.getFullYear()
-            );
-        } else {
-            return (
-                parseInt(exp.month) === selectedMonth + 1 &&
-                parseInt(exp.year) === selectedYear
-            );
-        }
-    });
-
     return (
         <SafeAreaView style={mainStyles.container}>
             <SafeAreaView style={[mainStyles.topSheet, { padding: 0 }]} />
@@ -178,9 +124,11 @@ export default function GroceriesScreen() {
 
                         return (
                             <TransactionItem
-                                title={item.decription}
+                                categoryName={item.categoryId}
+                                description={item.decription}
                                 time={formatted}
                                 amount={item.amount}
+                                type={item.type}
                             />
                         );
                     }}

@@ -7,7 +7,7 @@ const splashLogo = require('../../assets/images/splash.png');
 export default function SplashScreen() {
   useEffect(() => {
     const timeout = setTimeout(() => {
-      router.replace('/(home)');
+      router.replace('/OnBoarding1');
     }, 2000);
     return () => clearTimeout(timeout);
   }, []);

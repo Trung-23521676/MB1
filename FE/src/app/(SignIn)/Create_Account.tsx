@@ -25,6 +25,7 @@ import mainStyles from "@/src/styles/mainStyle";
 import { register } from "@/QuanLyTaiChinh-backend/userServices";
 import {getAllFamily} from "@/QuanLyTaiChinh-backend/familyService";
 import { User, Family } from "@/models/types";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export default function CreateAccountScreen() {
     const router = useRouter();
@@ -34,6 +35,7 @@ export default function CreateAccountScreen() {
     const [showFamilyModal, setShowFamilyModal] = useState(false);
     const [families, setFamilies] = useState<Family[]>([]);
     const [loadingFamilies, setLoadingFamilies] = useState(false);
+    const [searchText, setSearchText] = useState("");
     
     // Form states
     const [formData, setFormData] = useState({
@@ -373,7 +375,16 @@ export default function CreateAccountScreen() {
         );
     }
 
+    const filteredFamilies = families.filter(f =>
+    f.name.toLowerCase().includes(searchText.toLowerCase())
+);
+
     return (
+        <KeyboardAwareScrollView
+                    enableOnAndroid
+                    keyboardShouldPersistTaps="handled"
+                    contentContainerStyle={{ flexGrow: 1 }}
+                    style={{ flex: 1 }}>
         <SafeAreaView style={mainStyles.container}>
             <SafeAreaView style={[mainStyles.topSheet, { padding: 0 }]} />
             <View style={mainStyles.bottomeSheet}>
@@ -519,6 +530,23 @@ export default function CreateAccountScreen() {
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
                         <View style={styles.modalHeader}>
+                            <TextInput
+                                style={{
+                                    marginHorizontal: 20,
+                                    marginBottom: 12,
+                                    paddingHorizontal: 16,
+                                    paddingVertical: 10,
+                                    borderRadius: 12,
+                                    backgroundColor: "#F0F0F0",
+                                    fontFamily: "Montserrat_400Regular",
+                                    fontSize: 16,
+                                    color: "#222",
+                                }}
+                                placeholder="Tìm kiếm gia đình..."
+                                placeholderTextColor="#A0AFC0"
+                                value={searchText}
+                                onChangeText={setSearchText}
+                            />
                             <Text style={styles.modalTitle}>Chọn gia đình</Text>
                             <TouchableOpacity
                                 onPress={() => setShowFamilyModal(false)}
@@ -535,7 +563,7 @@ export default function CreateAccountScreen() {
                             </View>
                         ) : (
                             <FlatList
-                                data={families}
+                                data={filteredFamilies}
                                 renderItem={renderFamilyItem}
                                 keyExtractor={(item) => item.id}
                                 style={styles.familyList}
@@ -560,6 +588,7 @@ export default function CreateAccountScreen() {
 
             <StatusBar style="auto" />
         </SafeAreaView>
+        </KeyboardAwareScrollView>
     );
 }
 
@@ -706,7 +735,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        maxHeight: "80%",
+        height: "80%",
         paddingBottom: 20,
     },
     modalHeader: {

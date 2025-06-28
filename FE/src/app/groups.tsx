@@ -212,6 +212,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f0f4f8',
+    paddingTop: 50
   },
   // Style cho button trong header
   headerButton: {
