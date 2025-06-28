@@ -28,9 +28,9 @@ export default function HomeScreen() {
             <View style={mainStyles.bottomeSheet}>
                 <SavingsGoalCard />
                 {/* <Text>{result}</Text> */}
-                <TransactionScreen />
+                <View style={{padding: 4}}></View>
+                <TransactionScreen  />
             </View>
-            <AddButton />
         </SafeAreaView>
     );
 }

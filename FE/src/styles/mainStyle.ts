@@ -29,14 +29,16 @@ const mainStyles = StyleSheet.create({
     },
     bottomeSheet: {
         backgroundColor: "#fff",
-        borderRadius: 60,
+        borderTopLeftRadius: 60,
+        borderTopRightRadius: 60,
         width: "100%",
-        height: "100%",
         padding: 30,
         // alignItems: "center",
         // marginTop: 32,
         fontFamily: "Montserrat",
         fontWeight: "bold",
+        flex: 1,
+        marginBottom: -70
     },
     title: {
         color: "#fff",

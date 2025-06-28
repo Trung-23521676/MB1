@@ -80,6 +80,7 @@ const TransactionScreen = () => {
                         trans = await getTransactionsByUserId(userId);
                         break;
                 }
+                trans.sort((a, b) => b.date.toDate().getTime() - a.date.toDate().getTime());
                 
                 console.log(`Fetched ${selectedFilter} transactions:`, trans);
                 setTransactions(trans); 
@@ -117,6 +118,7 @@ const TransactionScreen = () => {
 
             <FlatList scrollEnabled={true}
                 data={transactions}
+                style={{paddingBottom: 50}}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item }) => {
                     const date = item.date.toDate();

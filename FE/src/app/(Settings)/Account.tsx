@@ -517,11 +517,11 @@ export default function AccountScreen() {
                     <Ionicons name="arrow-back" size={24} color="#000" />
                 </TouchableOpacity>
                 <Text style={styles.header}>Tài Khoản Tiền</Text>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                     style={styles.addButton}
                     onPress={() => setModalVisible(true)}>
                     <Ionicons name="add" size={24} color="#000" />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
             </SafeAreaView>
 
             <View style={mainStyles.bottomeSheet}>

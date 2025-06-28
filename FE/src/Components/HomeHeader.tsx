@@ -53,7 +53,7 @@ const GreetingHeader = ({
                             size={16}
                             color="#fff"
                         />
-                        <Text style={styles.label}>Tổng Ví</Text>
+                        <Text style={styles.label}>Số dư tài khoản</Text>
                     </View>
                     <Text style={styles.amount}>{accounts?.balance.toString()}</Text>
                 </View>
@@ -67,7 +67,7 @@ const GreetingHeader = ({
                             size={16}
                             color="#fff"
                         />
-                        <Text style={styles.label}>Tổng Chi</Text>
+                        <Text style={styles.label}>Tổng chi</Text>
                     </View>
                     <Text style={styles.amount}>
                         {accounts?.initialBalance.toString()}
