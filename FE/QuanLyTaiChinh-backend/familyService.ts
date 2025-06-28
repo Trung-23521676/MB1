@@ -75,7 +75,7 @@ Promise<void> =>{
     else
     {
         const newFamily: Omit<Family, 'updatedAt' | 'createdAt'> = {
-            Id: familyId,
+            id: familyId,
             name: "New",
             adminId: memberId,
             address: "",
@@ -100,3 +100,13 @@ export const listenToFamily = async(userId: string,callback: (user: Family | nul
   const realtimeService = new RealtimeListenerService()
   return realtimeService.listenToDocument<Family>(COLLECTION_NAME, userId, callback);
 }
+// Lấy toàn bộ danh sách các gia đình
+export const getAllFamily = async (): Promise<Family[]> => {
+    try {
+        const families = await getCollection<Family>(COLLECTION_NAME);
+        return families;
+    } catch (error) {
+        console.error('Lỗi khi lấy danh sách tất cả các gia đình:', error);
+        throw error;
+    }
+};
