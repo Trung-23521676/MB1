@@ -412,7 +412,7 @@ export default function AddExpenseScreen() {
                 </View>
 
                 {/* Transaction Name */}
-                <View style={styles.inputSection}>
+                {/* <View style={styles.inputSection}>
                     <Text style={styles.label}>Tên giao dịch</Text>
                     <TextInput
                         style={styles.textInput}
@@ -421,7 +421,7 @@ export default function AddExpenseScreen() {
                         placeholder="Nhập tên giao dịch"
                         placeholderTextColor="#999"
                     />
-                </View>
+                </View> */}
 
                 {/* Amount */}
                 <View style={styles.inputSection}>
