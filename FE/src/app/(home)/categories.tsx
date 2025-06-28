@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         flexWrap: "wrap",
         justifyContent: "center",
-        gap: 16,
+        gap: 16,    
     },
     catBtn: {
         width: 90,

@@ -133,10 +133,12 @@ const TransactionScreen = () => {
 
                     return (
                         <TransactionItem
-                            title={item.decription}
+                            categoryName={item.categoryId}     // icon theo danh mục
+                            description={item.decription}        // mô tả hiển thị
                             time={formatted}
                             amount={item.amount}
-                        />
+                            type={item.type}
+                            />
                     );
                 }}
                 contentContainerStyle={{ paddingTop: 10 }}

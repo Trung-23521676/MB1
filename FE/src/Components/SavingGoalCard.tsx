@@ -52,12 +52,12 @@ const SavingsGoalCard = () => {
             <View style={styles.rightSection}>
                 <View style={styles.row}>
                     <Text style={styles.label}>Thu nhập tháng này</Text>
-                    <Text style={styles.amount}>{totalIncome}</Text>
+                    <Text style={styles.amount}>{Number(totalIncome).toLocaleString('vi-VN')}</Text>
                 </View>
                 <View style={styles.separator} />
                 <View style={styles.row}>
                     <Text style={styles.label}>Chi tiêu tháng này</Text>
-                    <Text style={styles.amount}>{totalExpense}</Text>
+                    <Text style={styles.amount}>{Number(totalExpense).toLocaleString('vi-VN')}</Text>
                 </View>
             </View>
         </View>
