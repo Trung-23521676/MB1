@@ -327,7 +327,7 @@ export default function AddExpenseScreen() {
             // Tạo transaction object với safe string conversion
             const transaction: Omit<
                 Transaction,
-                "Id" | "createdAt" | "updatedAt"
+                "id" | "createdAt" | "updatedAt"
             > = {
                 amount: Math.abs(parseFloat(safeString(expenseAmount))), // Luôn lưu số dương
                 date: d,

@@ -35,7 +35,7 @@ export const getTransactionField = async <K extends keyof Transaction>(
 };
 
 // tạo giao dịch
-export const createTransaction = async (transactionData: Omit< Transaction, 'Id' | 'createdAt' | 'updatedAt'>)
+export const createTransaction = async (transactionData: Omit< Transaction, 'id' | 'createdAt' | 'updatedAt'>)
 :Promise<string> =>{
     return executeTransaction<string>(async (Transaction) =>{
         const accountRef = doc(db, 'Account', transactionData.accountId);
