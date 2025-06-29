@@ -4,14 +4,15 @@ import NotificationButton from "@/src/Components/NotificationButton";
 import ProfileButton from "@/src/Components/ProfileButton";
 import { CategoryProvider } from '../context/categoryContext';
 import { UserProvider } from '@/UserContext';
+import { RefreshProvider } from '../context/refreshContext';
 import AddButton from '@/src/Components/AddButton';
 
 const RootLayout = () => {
     return (
-    <UserProvider>
-
-        <CategoryProvider>
-            <Stack
+        <RefreshProvider>
+            <UserProvider>
+                <CategoryProvider>
+                    <Stack
                 screenOptions={{
                     headerTransparent: true,
                     headerShown: true,
@@ -37,6 +38,7 @@ const RootLayout = () => {
             </Stack>
         </CategoryProvider>
     </UserProvider>
+    </RefreshProvider>
     )
 }
 

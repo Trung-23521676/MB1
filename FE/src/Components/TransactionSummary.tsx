@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
     View,
     Text,
@@ -6,96 +6,124 @@ import {
     TouchableOpacity,
     FlatList,
     SafeAreaView,
+    ActivityIndicator,
+    Alert,
 } from "react-native";
-import TransactionItem from "./TransactionItem"; // Reuse từ phần trước
-import { User, Transaction } from "@/models/types"; // Giả sử bạn đã định nghĩa User trong models/types.ts
+import { useNavigation } from "@react-navigation/native"; // SỬA ĐỔI: Bỏ useFocusEffect không cần thiết
+import TransactionItem from "./TransactionItem"; 
+import { Transaction } from "@/models/types"; 
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getUserById } from "../../QuanLyTaiChinh-backend/userServices";
-import { getTransactionsByDate,getAllTransactions, getTransactionsByYear, getTransactionsByMonth, getTransactionsByUserId
-    ,getTodayTransactions, getCurrentMonthTransactions,
-} from '@/QuanLyTaiChinh-backend/transactionServices'; // Giả sử bạn đã định nghĩa hàm này
-const filters = ["Ngày", "Tuần", "Tháng"];
-
-const allData = {
-    Ngày: [
-        { title: "Mua Sắm", time: "10:00 - 3/6", amount: 100000 },
-        { title: "Nơi Ở", time: "8:00 - 3/6", amount: 3250000 },
-    ],
-    Tuần: [
-        { title: "Thu Nhập", time: "10:00 - 30/5", amount: 5000000 },
-        { title: "Mua Sắm", time: "16:00 - 1/6", amount: 450000 },
-    ],
-    Tháng: [
-        { title: "Thu Nhập", time: "18:27 - 30/4", amount: 7500000 },
-        { title: "Mua Sắm", time: "17:00 - 20/5", amount: 500000 },
-        { title: "Nơi Ở", time: "8:30 - 13/5", amount: 3250000 },
-    ],
-};
+import { 
+    getTransactionsByMonth, 
+    getTransactionsByUserId,
+    getTransactionsByYear // Giả sử bạn có các hàm này
+} from '@/QuanLyTaiChinh-backend/transactionServices'; 
+import { deleteTransaction } from '@/QuanLyTaiChinh-backend/transactionServices';
+import { useRefresh } from "@/src/context/refreshContext"; // THÊM: Import hook useRefresh
 
 const TransactionScreen = () => {
-    //const router = useRouter();
-    //const { transactions, loading } = useCategory();
+    const navigation = useNavigation();
+    const { refreshKey, triggerRefresh } = useRefresh(); // THÊM: Sử dụng hook useRefresh
+
     const [selectedFilter, setSelectedFilter] = useState("Tháng");
     const [userId, setUserId] = useState<string | null>(null);
-    const [user, setUser] = useState<User | null>(null);
-    const [transactions, setTransactions] = useState<Transaction[] | null>([]); // Thay any bằng kiểu dữ liệu thực tế của bạn
+    const [transactions, setTransactions] = useState<Transaction[] | null>([]); 
+    const [loading, setLoading] = useState(false);
+
+    // BỎ: Toàn bộ logic làm mới cục bộ
+    // const [refreshKey, setRefreshKey] = useState(0);
+    // const triggerRefresh = () => setRefreshKey(prev => prev + 1);
+    // useFocusEffect(...);
+
     useEffect(() => {
         const fetchUserId = async () => {
             const id = await AsyncStorage.getItem("userId");
-            console.log("Fetched userId:", id); // Thêm dòng này
             setUserId(id);
         };
         fetchUserId();
     }, []);
+
     useEffect(() => {
-    const fetchTransactions = async () => {
-        if (userId) {
-            try {
-                let trans: Transaction[] = [];
-                //trans = await getAllTransactions();
-                const currentDate = new Date();
-                
-                switch (selectedFilter) {
-                    case "Ngày":
-                        // Lấy transactions hôm nay
-                        trans = await getTransactionsByDate(userId, currentDate);
-                        break;
+        const fetchTransactions = async () => {
+            if (userId) {
+                setLoading(true);
+                try {
+                    let trans: Transaction[] = [];
+                    const currentDate = new Date();
+                    
+                    switch (selectedFilter) {
+                        case "Ngày":
+                            // Bạn cần một hàm để lấy giao dịch theo ngày
+                            trans = await getTransactionsByUserId(userId);
+                            trans = trans.filter(t => t.date.toDate().toDateString() === currentDate.toDateString());
+                            break;
                         
-                    case "Tháng":
-                        // Lấy transactions tháng hiện tại
-                        const currentMonth = currentDate.getMonth() + 1 ; // +1 vì getMonth() trả về 0-11
-                        const currentYear = currentDate.getFullYear();
-                        trans = await getTransactionsByMonth(userId, currentMonth, currentYear);
-                        break;
-                        
-                    case "Năm":
-                        // Lấy transactions năm hiện tại
-                        const year = currentDate.getFullYear();
-                        trans = await getTransactionsByYear(userId, year);
-                        break;
-                        
-                    case "Tất cả":
-                    default:
-                        // Lấy tất cả transactions của user
-                        trans = await getTransactionsByUserId(userId);
-                        break;
+                        case "Tuần":
+                             const oneWeekAgo = new Date();
+                             oneWeekAgo.setDate(currentDate.getDate() - 7);
+                             trans = await getTransactionsByUserId(userId); // Tạm thời lấy tất cả rồi lọc
+                             trans = trans.filter(t => t.date.toDate() >= oneWeekAgo);
+                             break;
+                            
+                        case "Tháng":
+                            const currentMonth = currentDate.getMonth() + 1;
+                            const currentYear = currentDate.getFullYear();
+                            trans = await getTransactionsByMonth(userId, currentMonth, currentYear);
+                            break;
+                            
+                        case "Tất cả":
+                        default:
+                            trans = await getTransactionsByUserId(userId);
+                            break;
+                    }
+                    trans.sort((a, b) => b.date.toDate().getTime() - a.date.toDate().getTime());
+                    setTransactions(trans); 
+                } catch (error) {
+                    console.error('Error fetching transactions:', error);
+                    setTransactions([]);
+                } finally {
+                    setLoading(false);
                 }
-                trans.sort((a, b) => b.date.toDate().getTime() - a.date.toDate().getTime());
-                
-                console.log(`Fetched ${selectedFilter} transactions:`, trans);
-                setTransactions(trans); 
-            } catch (error) {
-                console.error('Error fetching transactions:', error);
-                setTransactions([]);
             }
-        }
+        };
+        fetchTransactions();
+    }, [userId, selectedFilter, refreshKey]); // SỬA ĐỔI: Phụ thuộc vào refreshKey từ context
+
+    const handleDelete = async (id: string) => {
+        Alert.alert(
+            "Xác nhận Xóa",
+            "Bạn có chắc chắn muốn xóa giao dịch này không?",
+            [
+                {
+                    text: "Hủy",
+                    style: "cancel"
+                },
+                {
+                    text: "Đồng ý",
+                    onPress: async () => {
+                        try {
+                            await deleteTransaction(id);
+                            triggerRefresh(); // SỬA ĐỔI: Gọi triggerRefresh từ context
+                        } catch (error) {
+                            console.error('Delete failed:', error);
+                            Alert.alert("Lỗi", "Không thể xóa giao dịch.");
+                        }
+                    },
+                    style: "destructive"
+                }
+            ],
+            { cancelable: false }
+        );
     };
-    fetchTransactions();
-}, [userId, selectedFilter]); 
+
+    const handleEdit = (transaction: Transaction) => {
+        navigation.navigate('AddExpense', { transactionId: transaction.id });
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.filterRow}>
-                {filters.map((filter) => (
+                {["Ngày", "Tuần", "Tháng", "Tất cả"].map((filter) => (
                     <TouchableOpacity
                         key={filter}
                         onPress={() => setSelectedFilter(filter)}
@@ -116,38 +144,38 @@ const TransactionScreen = () => {
                 ))}
             </View>
 
-            <FlatList scrollEnabled={true}
-                data={transactions}
-                style={{paddingBottom: 50}}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item }) => {
-                    const date = item.date.toDate();
+            {loading ? (
+                <ActivityIndicator size="large" color="#6DBDFF" style={{ marginTop: 20 }} />
+            ) : (
+                <FlatList
+                    data={transactions}
+                    style={{paddingBottom: 50}}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => {
+                        const date = item.date.toDate();
+                        const formatted =
+                            date.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }) +
+                            " - " +
+                            date.toLocaleDateString("vi-VN");
 
-                    const formatted =
-                        date.toLocaleTimeString("vi-VN", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                        }) +
-                        " - " +
-                        date.toLocaleDateString("vi-VN");
-
-                    return (
-                        <TransactionItem
-                            categoryName={item.categoryId}     // icon theo danh mục
-                            description={item.decription}        // mô tả hiển thị
-                            time={formatted}
-                            amount={item.amount}
-                            type={item.type}
+                        return (
+                            <TransactionItem
+                                categoryName={item.categoryId}
+                                description={item.decription}
+                                time={formatted}
+                                amount={item.amount}
+                                type={item.type}
+                                onDelete={() => handleDelete(item.id)}
+                                onEdit={() => handleEdit(item)}
                             />
-                    );
-                }}
-                contentContainerStyle={{ paddingTop: 10 }}
-            />
+                        );
+                    }}
+                    contentContainerStyle={{ paddingTop: 10 }}
+                />
+            )}
         </SafeAreaView>
     );
 };
-
-export default TransactionScreen;
 
 const styles = StyleSheet.create({
     container: {
@@ -179,3 +207,5 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
 });
+
+export default TransactionScreen;

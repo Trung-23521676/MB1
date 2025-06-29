@@ -8,14 +8,6 @@ import mainStyles from '@/src/styles/mainStyle';
 import AddButton from '@/src/Components/AddButton';
 import {analyzeSpending} from '@/gpt';
 
-const spendingData = `
-- 01/06: Mua cà phê 40,000 VND
-- 01/06: Ăn trưa 75,000 VND
-- 02/06: Mua sách 120,000 VND
-- 03/06: Thanh toán điện 300,000 VND
-- 04/06: Gửi tiết kiệm 500,000 VND
-`;
-
 
 export default function HomeScreen() {
     // const result = analyzeSpending(spendingData);

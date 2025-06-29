@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import {
   Ionicons,
   MaterialCommunityIcons,
@@ -25,6 +25,8 @@ interface TransactionItemProps {
   time: string;
   amount: number;
   type: "income" | "expense";
+  onDelete?: () => void;
+  onEdit?: () => void;
 }
 
 const TransactionItem: React.FC<TransactionItemProps> = ({
@@ -32,7 +34,9 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
   description,
   time,
   amount,
-  type
+  type,
+  onDelete,
+  onEdit
 }) => {
   const isIncome = type === 'income';
 
@@ -52,6 +56,12 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
       <Text style={[styles.amount, { color: isIncome ? '#007AFF' : 'red' }]}>
         {amount.toLocaleString('vi-VN')}
       </Text>
+      <TouchableOpacity onPress={onEdit} style={{ marginLeft: 8 }}>
+        <Ionicons name="create-outline" size={20} color="#007AFF" />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={onDelete} style={{ marginLeft: 8 }}>
+        <Ionicons name="trash-outline" size={20} color="red" />
+      </TouchableOpacity>
     </View>
   );
 };

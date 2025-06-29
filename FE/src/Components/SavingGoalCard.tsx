@@ -1,42 +1,43 @@
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { User, Transaction } from "@/models/types";
+import { User } from "@/models/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
     getTotalExpense,
     getTotalIncome,
-} from "@/QuanLyTaiChinh-backend/transactionServices"; // Giả sử bạn đã định nghĩa hàm này
+} from "@/QuanLyTaiChinh-backend/transactionServices";
+import { useRefresh } from '@/src/context/refreshContext';
+
 const SavingsGoalCard = () => {
+    const { refreshKey } = useRefresh();
     const [userId, setUserId] = useState<string | null>(null);
-    const [user, setUser] = useState<User | null>(null);
     const [totalIncome, setTotalIncome] = useState<string>("0");
     const [totalExpense, setTotalExpense] = useState<string>("0");
+
     useEffect(() => {
         const fetchUserId = async () => {
             const id = await AsyncStorage.getItem("userId");
-            console.log("Fetched userId:", id); // Thêm dòng này
             setUserId(id);
         };
         fetchUserId();
     }, []);
+
     useEffect(() => {
         const fetchData = async () => {
             if (userId) {
                 try {
                     const income = await getTotalIncome(userId);
-                    const i = income.toString();
                     const expense = await getTotalExpense(userId);
-                    const e = expense.toString();
-                    setTotalIncome(i);
-                    setTotalExpense(e);
+                    setTotalIncome(income.toString());
+                    setTotalExpense(expense.toString());
                 } catch (error) {
                     console.error("Error fetching data:", error);
                 }
             }
         };
         fetchData();
-    }, [userId]);
+    }, [userId, refreshKey]);
 
     return (
         <View style={styles.container}>

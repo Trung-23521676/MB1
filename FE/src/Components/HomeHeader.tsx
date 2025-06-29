@@ -2,15 +2,18 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { User, Account } from "@/models/types";
+import { Account } from "@/models/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAccountByUserId } from "../../QuanLyTaiChinh-backend/accountServices";
-import { getTotalExpense } from "../../QuanLyTaiChinh-backend/transactionServices";
+import { getTotalExpense, getTotalIncome } from "../../QuanLyTaiChinh-backend/transactionServices";
+import { useRefresh } from '@/src/context/refreshContext';
 
 const GreetingHeader = () => {
+  const { refreshKey } = useRefresh();
   const [userId, setUserId] = useState<string | null>(null);
   const [accounts, setAccounts] = useState<Account | null>(null);
   const [totalExpense, setTotalExpense] = useState<number>(0);
+  const [totalIncome, setTotalIncome] = useState<number>(0);
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -21,7 +24,7 @@ const GreetingHeader = () => {
   }, []);
 
   useEffect(() => {
-    const fetchAccountAndExpense = async () => {
+    const fetchAccountAndTotals = async () => {
       if (userId) {
         try {
           const accountData = await getAccountByUserId(userId);
@@ -32,16 +35,19 @@ const GreetingHeader = () => {
           }
 
           const expense = await getTotalExpense(userId);
+          const income = await getTotalIncome(userId);
           setTotalExpense(expense);
+          setTotalIncome(income)
         } catch (error) {
-          console.error("Lỗi khi fetch account hoặc tổng chi:", error);
+          console.error("Lỗi khi fetch account hoặc tổng thu/chi:", error);
           setAccounts(null);
           setTotalExpense(0);
+          setTotalIncome(0);
         }
       }
     };
-    fetchAccountAndExpense();
-  }, [userId]);
+    fetchAccountAndTotals();
+  }, [userId, refreshKey]);
 
   return (
     <SafeAreaView style={styles.container}>
